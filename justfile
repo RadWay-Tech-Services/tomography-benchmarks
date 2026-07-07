@@ -1,4 +1,5 @@
 env-name := "tomobenchmarks"
+default-nx := "synthetic.nx"
 
 default: recreate-env generate-input run-all
 
@@ -36,31 +37,37 @@ pip-install:
         httomo==3.2.1
 
 # Creates synthetic Nexus file using tomophantom
-generate-input detector-width="1024" detector-height="1024" projection-count="512":
-    conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path synthetic.nx --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
+generate-input detector-width="1024" detector-height="1024" projection-count="512" filename=default-nx:
+    conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
-run-all: \
-    (run-httomo "pipelines/httomo/fbp-preproc.yaml") \
-    (run-httomo "pipelines/httomo/fbp.yaml") \
-    (run-httomo "pipelines/httomo/lprec.yaml") \
-    (run-nabu "pipelines/nabu/fbp-preproc.conf") \
-    (run-nabu "pipelines/nabu/fbp.conf") \
-    (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf") \
-    (run-tomocupy "pipelines/tomocupy/fbp.conf") \
-    (run-tomocupy "pipelines/tomocupy/lprec.conf")
+run-all input-file=default-nx: \
+    (run-httomo "pipelines/httomo/fbp-preproc.yaml" input-file) \
+    (run-httomo "pipelines/httomo/fbp.yaml" input-file) \
+    (run-httomo "pipelines/httomo/lprec.yaml" input-file) \
+    (run-nabu "pipelines/nabu/fbp-preproc.conf" input-file) \
+    (run-nabu "pipelines/nabu/fbp.conf" input-file) \
+    (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf" input-file) \
+    (run-tomocupy "pipelines/tomocupy/fbp.conf" input-file) \
+    (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file)
 
 # Run httomo tomography pipeline
-run-httomo pipeline nodes="1":
-    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run synthetic.nx {{pipeline}} httomo-out"
+run-httomo pipeline input-file=default-nx nodes="1":
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run {{input-file}} {{pipeline}} httomo-out"
 
 # Run Nabu tomography pipeline
-run-nabu pipeline:
+run-nabu pipeline input-file=default-nx:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    # Need to edit and copy the config file to specify the input Nexus
+    tmp=$(mktemp)
+    sed 's/synthetic.nx/{{input-file}}/g' {{pipeline}} >"$tmp"
+
     mkdir -p nabu-out
-    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu {{pipeline}}'
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu $1' _ "$tmp"
 
 # Run tomocupy tomography pipeline
-run-tomocupy pipeline:
-    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config {{pipeline}} --out-path-name tomocupy-out --save-format h5nolinks
+run-tomocupy pipeline input-file=default-nx:
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
 
 # Removes all non-version controlled files in the directory
 cleanup:

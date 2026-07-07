@@ -1,6 +1,6 @@
 env-name := "tomobenchmarks"
 
-default: recreate-env generate-input run-httomo run-nabu run-tomocupy
+default: recreate-env generate-input run-all
 
 # Recreate environment.yml
 export-env: delete-env
@@ -39,15 +39,29 @@ pip-install:
 generate-input detector-width="1024" detector-height="1024" projection-count="512":
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path synthetic.nx --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
+run-all: \
+    (run-httomo "pipelines/httomo/fbp-preproc.yaml") \
+    (run-httomo "pipelines/httomo/fbp.yaml") \
+    (run-httomo "pipelines/httomo/lprec.yaml") \
+    (run-nabu "pipelines/nabu/fbp-preproc.conf") \
+    (run-nabu "pipelines/nabu/fbp.conf") \
+    (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf") \
+    (run-tomocupy "pipelines/tomocupy/fbp.conf") \
+    (run-tomocupy "pipelines/tomocupy/lprec.conf")
+
 # Run httomo tomography pipeline
-run-httomo nodes="1":
-    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run synthetic.nx synthetic.yaml httomo-out"
+run-httomo pipeline nodes="1":
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run synthetic.nx {{pipeline}} httomo-out"
 
 # Run Nabu tomography pipeline
-run-nabu:
+run-nabu pipeline:
     mkdir -p nabu-out
-    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu nabu-synthetic.conf'
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu {{pipeline}}'
 
 # Run tomocupy tomography pipeline
-run-tomocupy:
-    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config tomocupy-synthetic.conf --out-path-name tomocupy-out --save-format h5nolinks
+run-tomocupy pipeline:
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config {{pipeline}} --out-path-name tomocupy-out --save-format h5nolinks
+
+# Removes all non-version controlled files in the directory
+cleanup:
+    git clean -fdx

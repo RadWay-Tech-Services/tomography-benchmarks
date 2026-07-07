@@ -1,2 +1,5 @@
 .vscode
 *.nx
+*.h5
+/*-out
+*.log

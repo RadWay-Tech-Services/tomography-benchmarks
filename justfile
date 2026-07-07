@@ -2,6 +2,7 @@ default-env-name := "tomobenchmarks"
 default-detector-width := "1024"
 default-projection-count := "512"
 default-detector-height := "1024"
+default-nodes := "1"
 
 # Recreate environment.yml
 export-env env-name=default-env-name: (delete-env env-name)
@@ -36,6 +37,19 @@ pip-install env-name=default-env-name:
         httomo-backends==1.2.0 \
         httomo==3.2.1
 
+# Creates synthetic Nexus file using tomophantom
 generate-input env-name=default-env-name detector-width=default-detector-width detector-height=default-detector-height projection-count=default-projection-count:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path synthetic.nx --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
+# Run httomo tomography pipeline
+run-httomo env-name=default-env-name nodes=default-nodes:
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run synthetic.nx synthetic.yaml httomo-out"
+
+# Run Nabu tomography pipeline
+run-nabu env-name=default-env-name:
+    mkdir -p nabu-out
+    conda run --no-capture-output --name {{env-name}} -- bash -c "PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu nabu-synthetic.conf"
+
+# Run tomocupy tomography pipeline
+run-tomocupy env-name=default-env-name:
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config tomocupy-synthetic.conf --out-path-name tomocupy-out --save-format h5nolinks

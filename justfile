@@ -1,11 +1,9 @@
-default-env-name := "tomobenchmarks"
-default-detector-width := "1024"
-default-projection-count := "512"
-default-detector-height := "1024"
-default-nodes := "1"
+env-name := "tomobenchmarks"
+
+default: recreate-env generate-input run-httomo run-nabu run-tomocupy
 
 # Recreate environment.yml
-export-env env-name=default-env-name: (delete-env env-name)
+export-env: delete-env
     # Base
     conda create --yes --name {{env-name}} --channel main --channel conda-forge --channel httomo python=3.12 pip wheel openmpi==4.1.6 h5py[build=*openmpi*] numpy=2.4 cuda-version=12.9 cuda cupy=14.0 gcc=14 gxx=14 main::sysroot_linux-64 tomophantom
     # httomo dependencies
@@ -18,15 +16,15 @@ export-env env-name=default-env-name: (delete-env env-name)
     conda export --name {{env-name}} --file environment.yml
 
 # Create Conda env from environment.yml and installs packages via Pip
-recreate-env env-name=default-env-name: (delete-env env-name) && (pip-install env-name)
+recreate-env: delete-env && pip-install
     conda env create --yes --name {{env-name}} --file environment.yml
 
 # Delete Conda env
-delete-env env-name=default-env-name:
+delete-env:
     -conda env remove --yes --name {{env-name}}
 
 # Installs required packages from PyPi
-pip-install env-name=default-env-name:
+pip-install:
     conda run --no-capture-output --name {{env-name}} -- pip install \
         git+https://github.com/lebedov/scikit-cuda@0.5.1 \
         nabu[full]==2025.2.6 \
@@ -38,18 +36,18 @@ pip-install env-name=default-env-name:
         httomo==3.2.1
 
 # Creates synthetic Nexus file using tomophantom
-generate-input env-name=default-env-name detector-width=default-detector-width detector-height=default-detector-height projection-count=default-projection-count:
+generate-input detector-width="1024" detector-height="1024" projection-count="512":
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path synthetic.nx --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
 # Run httomo tomography pipeline
-run-httomo env-name=default-env-name nodes=default-nodes:
+run-httomo nodes="1":
     conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run synthetic.nx synthetic.yaml httomo-out"
 
 # Run Nabu tomography pipeline
-run-nabu env-name=default-env-name:
+run-nabu:
     mkdir -p nabu-out
-    conda run --no-capture-output --name {{env-name}} -- bash -c "PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu nabu-synthetic.conf"
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu nabu-synthetic.conf'
 
 # Run tomocupy tomography pipeline
-run-tomocupy env-name=default-env-name:
+run-tomocupy:
     conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config tomocupy-synthetic.conf --out-path-name tomocupy-out --save-format h5nolinks

@@ -6,7 +6,7 @@ default: recreate-env generate-input run-all
 # Recreate environment.yml
 export-env: delete-env
     # Base
-    conda create --yes --name {{env-name}} --channel main --channel conda-forge --channel httomo python=3.12 pip wheel openmpi==4.1.6 h5py[build=*openmpi*] numpy=2.4 cuda-version=12.9 cuda cupy=14.0 gcc=14 gxx=14 main::sysroot_linux-64 tomophantom
+    conda create --yes --name {{env-name}} --channel main --channel conda-forge --channel httomo python=3.12 pip wheel openmpi==4.1.6 h5py[build=*openmpi*] numpy=2.4 cuda-version=12.9 cuda cupy=14.0 gcc=14 gxx=14 main::sysroot_linux-64
     # httomo dependencies
     conda install --yes --name {{env-name}} --channel conda-forge astra-toolbox aiofiles click graypy loguru nvtx pillow pyyaml scikit-image scipy tqdm hdf5plugin pywavelets
     # Nabu dependencies
@@ -17,12 +17,23 @@ export-env: delete-env
     conda export --name {{env-name}} --file environment.yml
 
 # Create Conda env from environment.yml and installs packages via Pip
-recreate-env: delete-env && pip-install
+recreate-env: delete-env && pip-install install-tomophantom
     conda env create --yes --name {{env-name}} --file environment.yml
 
 # Delete Conda env
 delete-env:
     -conda env remove --yes --name {{env-name}}
+
+install-tomophantom:
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'git clone git@github.com:dkazanc/TomoPhantom.git \
+        && mkdir TomoPhantom/build \
+        && cd TomoPhantom/build \
+        && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+        && cmake --build . \
+        && cmake --install . \
+        && pip install .. \
+        && cd ../.. \
+        && rm -rf TomoPhantom'
 
 # Installs required packages from PyPi
 pip-install:

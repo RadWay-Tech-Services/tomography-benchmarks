@@ -67,14 +67,11 @@ run-httomo pipeline input-file=default-nx nodes="1":
 
 # Run Nabu tomography pipeline
 run-nabu pipeline input-file=default-nx:
-    #!/usr/bin/env bash
-    set -euxo pipefail
     # Need to edit and copy the config file to specify the input Nexus
-    tmp=$(mktemp)
-    sed 's/synthetic.nx/{{input-file}}/g' {{pipeline}} >"$tmp"
-
+    sed 's/synthetic.nx/{{input-file}}/g' {{pipeline}} > {{pipeline}}.tmp
     mkdir -p nabu-out
-    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu $1' _ "$tmp"
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu {{pipeline}}.tmp'
+    rm {{pipeline}}.tmp
 
 # Run tomocupy tomography pipeline
 run-tomocupy pipeline input-file=default-nx:

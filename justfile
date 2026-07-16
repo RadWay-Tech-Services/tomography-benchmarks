@@ -80,3 +80,6 @@ run-tomocupy pipeline input-file=default-nx:
 # Removes all non-version controlled files in the directory
 cleanup:
     git clean -fdx
+
+build-container:
+    apptainer build tomobenchmarks.sif ./tomobenchmarks.def

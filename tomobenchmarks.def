@@ -1,0 +1,14 @@
+BootStrap: docker
+From: anaconda/miniconda
+
+%files
+    justfile /justfile
+    environment.yml /environment.yml
+
+%post
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+    cd /
+    conda install --yes just
+    CONDA_OVERRIDE_CUDA=12.9 just recreate-env
+    conda clean --all

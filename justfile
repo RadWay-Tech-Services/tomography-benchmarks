@@ -70,7 +70,7 @@ run-nabu pipeline input-file=default-nx:
     # Need to edit and copy the config file to specify the input Nexus
     sed 's/synthetic.nx/{{input-file}}/g' {{pipeline}} > {{pipeline}}.tmp
     mkdir -p nabu-out
-    conda run --no-capture-output --name {{env-name}} -- bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH time nabu {{pipeline}}.tmp'
+    conda run --no-capture-output --name {{env-name}} -- time bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH nabu {{pipeline}}.tmp'
     rm {{pipeline}}.tmp
 
 # Run tomocupy tomography pipeline

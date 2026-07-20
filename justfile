@@ -25,7 +25,7 @@ delete-env:
     -conda env remove --yes --name {{env-name}}
 
 install-tomophantom:
-    conda run --no-capture-output --name {{env-name}} -- bash -c 'git clone git@github.com:dkazanc/TomoPhantom.git \
+    conda run --no-capture-output --name {{env-name}} -- bash -c 'git clone https://github.com/dkazanc/TomoPhantom.git \
         && mkdir TomoPhantom/build \
         && cd TomoPhantom/build \
         && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \

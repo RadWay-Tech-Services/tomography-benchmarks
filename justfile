@@ -51,6 +51,8 @@ pip-install:
 generate-input detector-width="1024" detector-height="1024" projection-count="512" filename=default-nx:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
+generate-input-huge: (generate-input "3000" "2048" "2448" "synthetic-huge.nx")
+
 run-all input-file=default-nx: \
     (run-httomo "pipelines/httomo/fbp-preproc.yaml" input-file) \
     (run-httomo "pipelines/httomo/fbp.yaml" input-file) \

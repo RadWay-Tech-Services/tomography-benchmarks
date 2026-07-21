@@ -53,8 +53,8 @@
   module_path: httomolibgpu.prep.stripe
   parameters:
     sigma: 2
-    wname: db5
-    level: null
+    wname: db15
+    level: 7
 # --- Negative log is required for reconstruction to convert raw intensity measurements into the line integrals of attenuation. --- 
 # - method: minus_log
 #   module_path: httomolibgpu.prep.normalize

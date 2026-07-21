@@ -6,6 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
 #SBATCH --mem-per-cpu=4000
+#SBATCH --gres=gpu:4
 #SBATCH --exclusive
 #SBATCH --output=run-httomo-4.log
 

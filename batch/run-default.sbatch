@@ -3,7 +3,7 @@
 #SBATCH --job-name=run-default
 #SBATCH --partition=gpu
 #SBATCH --time=00:10:00
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=4000
 #SBATCH --gres=gpu:1
 #SBATCH --output=run-default.log

@@ -88,10 +88,10 @@ def main(args: argparse.Namespace):
         exchange_group["data"] = sinogram_dataset
         exchange_group["theta"] = angles
         exchange_group["data_white"] = (
-            np.ones((angles_num, Vert_det, Horiz_det), dtype=sinogram_dtype) * 32535
+            np.ones((1, Vert_det, Horiz_det), dtype=sinogram_dtype) * 32535
         )
         exchange_group["data_dark"] = np.ones(
-            (angles_num, Vert_det, Horiz_det), dtype=sinogram_dtype
+            (1, Vert_det, Horiz_det), dtype=sinogram_dtype
         )
 
         data_group.create_dataset(

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=pk_tmobench
-#SBATCH --job-name=run-default
+#SBATCH --job-name=generate-input-data
 #SBATCH --partition=cpu
 #SBATCH --time=00:30:00
 #SBATCH --cpus-per-task=16

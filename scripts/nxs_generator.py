@@ -32,7 +32,7 @@ def main(args: argparse.Namespace):
 
     angles = np.linspace(*args.angle_range, angles_num, dtype="float32")  # in degrees
 
-    available_memory_bytes = psutil.virtual_memory().available
+    available_memory_bytes = min(psutil.virtual_memory().available, 32 * 1024**3)
     slice_memory_bytes = Horiz_det * angles_num * sinogram_dtype.itemsize
     if slice_memory_bytes > available_memory_bytes:
         print(

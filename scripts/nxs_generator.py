@@ -40,7 +40,7 @@ def main(args: argparse.Namespace):
         )
         return
 
-    chunk_size = available_memory_bytes // slice_memory_bytes
+    chunk_size = available_memory_bytes // slice_memory_bytes // 8
     chunk_count = int(np.ceil(Vert_det / chunk_size))
     print(
         f"Creating phantom in {chunk_count} number of chunks of at max {chunk_size} slices per chunk."
@@ -125,6 +125,7 @@ def main(args: argparse.Namespace):
             sinogram_dataset[:angles_num, chunk_start:chunk_end, :Horiz_det] = (
                 swapped_projData3D_analyt
             )
+            print(f"Chunk {i} done!")
 
     print(
         f"#slices: {Vert_det}, #projections: {angles_num}, detector width: {Horiz_det}"

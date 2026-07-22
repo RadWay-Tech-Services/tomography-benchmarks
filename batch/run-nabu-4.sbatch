@@ -5,7 +5,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=4
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=64
 #SBATCH --mem-per-cpu=4000
 #SBATCH --gres=gpu:4
 #SBATCH --output=run-nabu-4.log

@@ -66,13 +66,13 @@ run-all input-file=default-nx: \
     (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file)
 
 # Run httomo tomography pipeline
-run-httomo pipeline input-file=default-nx nodes="1":
-    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{nodes}} bash -c "time python -m httomo run {{input-file}} {{pipeline}} httomo-out"
+run-httomo pipeline input-file=default-nx tasks="1":
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{tasks}} bash -c "time python -m httomo run {{input-file}} {{pipeline}} httomo-out"
 
 # Run Nabu tomography pipeline
-run-nabu pipeline input-file=default-nx:
+run-nabu pipeline input-file=default-nx gpus="1":
     # Need to edit and copy the config file to specify the input Nexus
-    sed 's/synthetic.nx/{{input-file}}/g' {{pipeline}} > {{pipeline}}.tmp
+    sed -e 's/synthetic.nx/{{input-file}}/g' -e 's/^gpus = [0-9]\+/gpus = {{gpus}}/' {{pipeline}} > {{pipeline}}.tmp
     mkdir -p nabu-out
     conda run --no-capture-output --name {{env-name}} -- time bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH nabu {{pipeline}}.tmp'
     rm {{pipeline}}.tmp

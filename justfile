@@ -53,6 +53,8 @@ generate-input detector-width="1024" detector-height="1024" projection-count="51
 
 generate-input-huge: (generate-input "3000" "2048" "2448" "synthetic-huge.nx")
 
+generate-all: generate-input generate-input-huge
+
 run-all input-file=default-nx: \
     (run-httomo "pipelines/httomo/fbp-preproc.yaml" input-file) \
     (run-httomo "pipelines/httomo/fbp.yaml" input-file) \

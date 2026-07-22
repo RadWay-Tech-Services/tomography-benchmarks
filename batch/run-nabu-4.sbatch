@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=pk_tmobench
-#SBATCH --job-name=run-httomo-4
+#SBATCH --job-name=run-nabu-4
 #SBATCH --partition=gpu
 #SBATCH --time=01:00:00
 #SBATCH --nodes=1
@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=4000
 #SBATCH --gres=gpu:4
-#SBATCH --output=run-httomo-4.log
+#SBATCH --output=run-nabu-4.log
 
 module load singularity
 export TMPDIR=/tmp

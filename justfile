@@ -43,7 +43,7 @@ pip-install:
         git+https://github.com/RadWay-Tech-Services/tomocupy@62f439670f19065b67c02084c42d8cc80d98d7ab \
         tomobar==2026.3.1.0 \
         httomolib==4.2 \
-        httomolibgpu==5.7 \
+        git+https://github.com/RadWay-Tech-Services/httomolibgpu@783f6bf28bfc3d252b6e82a7fa368f716f83d924 \
         httomo-backends==1.2.0 \
         httomo==3.2.1
 

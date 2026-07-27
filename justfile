@@ -43,17 +43,15 @@ pip-install:
         git+https://github.com/RadWay-Tech-Services/tomocupy@62f439670f19065b67c02084c42d8cc80d98d7ab \
         tomobar==2026.3.1.0 \
         httomolib==4.2 \
-        git+https://github.com/RadWay-Tech-Services/httomolibgpu@783f6bf28bfc3d252b6e82a7fa368f716f83d924 \
+        httomolibgpu==5.8.1 \
         httomo-backends==1.2.0 \
         httomo==3.2.1
 
 # Creates synthetic Nexus file using tomophantom
-generate-input detector-width="1024" detector-height="1024" projection-count="512" filename=default-nx:
+generate-input detector-width="1200" detector-height="1600" projection-count="512" filename=default-nx:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
-generate-input-huge: (generate-input "3000" "2048" "2448" "synthetic-huge.nx")
-
-generate-input-d2: (generate-input "2368" "2000" "4416" "synthetic-d2.nx")
+generate-input-huge: (generate-input "2368" "4416" "1500" "synthetic-huge.nx")
 
 generate-all: generate-input generate-input-huge
 

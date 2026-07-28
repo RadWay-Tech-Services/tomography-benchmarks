@@ -51,7 +51,7 @@ pip-install:
 generate-input detector-width="1200" detector-height="1600" projection-count="512" filename=default-nx:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
-generate-input-huge: (generate-input "2368" "4416" "1500" "synthetic-huge.nx")
+generate-input-huge: (generate-input "2048" "4096" "2000" "synthetic-huge.nx")
 
 generate-all: generate-input generate-input-huge
 

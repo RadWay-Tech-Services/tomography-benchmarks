@@ -2,7 +2,7 @@
 #SBATCH --account=pk_tmobench
 #SBATCH --job-name=run-nabu-fbp-preproc
 #SBATCH --partition=gpu
-#SBATCH --time=01:00:00
+#SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=64

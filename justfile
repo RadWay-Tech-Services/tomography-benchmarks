@@ -79,7 +79,7 @@ run-nabu pipeline input-file=default-nx gpus="1":
 
 # Run tomocupy tomography pipeline
 run-tomocupy pipeline input-file=default-nx:
-    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon_steps --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
 
 # Removes all non-version controlled files in the directory
 cleanup:

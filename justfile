@@ -48,7 +48,7 @@ pip-install:
         httomo==3.2.1
 
 # Creates synthetic Nexus file using tomophantom
-generate-input detector-width="1200" detector-height="1600" projection-count="512" filename=default-nx:
+generate-input detector-width="1024" detector-height="1024" projection-count="512" filename=default-nx:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
 generate-input-huge: (generate-input "2048" "4096" "2000" "synthetic-huge.nx")

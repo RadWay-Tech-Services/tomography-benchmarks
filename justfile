@@ -63,7 +63,7 @@ run-all input-file=default-nx: \
     (run-nabu "pipelines/nabu/fbp.conf" input-file) \
     (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf" input-file) \
     (run-tomocupy "pipelines/tomocupy/fbp.conf" input-file) \
-    (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file)
+    (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file "recon")
 
 # Run httomo tomography pipeline
 run-httomo pipeline input-file=default-nx tasks="1":
@@ -78,8 +78,8 @@ run-nabu pipeline input-file=default-nx gpus="1":
     rm {{pipeline}}.tmp
 
 # Run tomocupy tomography pipeline
-run-tomocupy pipeline input-file=default-nx:
-    conda run --no-capture-output --name {{env-name}} -- time tomocupy recon_steps --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
+run-tomocupy pipeline input-file=default-nx subcommand="recon_steps":
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy {{subcommand}} --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
 
 # Removes all non-version controlled files in the directory
 cleanup:

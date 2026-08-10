@@ -84,3 +84,10 @@ run-tomocupy pipeline input-file=default-nx:
 # Removes all non-version controlled files in the directory
 cleanup:
     git clean -fdx
+
+sbatch-all:
+    sbatch batch/run-httomo-fbp-preproc.sbatch
+    sbatch batch/run-httomo-fbp.sbatch
+    sbatch batch/run-httomo-lprec.sbatch
+    sbatch batch/run-nabu-fbp.sbatch
+    sbatch batch/run-nabu-fbp-preproc.sbatch

@@ -10,4 +10,4 @@
 
 module load singularity
 export TMPDIR=/tmp
-singularity exec --nv -B /opt/cray:/opt/cray -B /project/pk_tmobench/tomography-benchmarks:/tomography-benchmarks tomobenchmarks.sif bash -c '. /miniconda3/bin/activate && cd /tomography-benchmarks && just run-all'
+singularity exec --nv -B /opt/cray:/opt/cray -B /project/pk_tmobench/tomography-benchmarks:/tomography-benchmarks tomobenchmarks.sif bash -c '. /miniconda3/bin/activate && cd /tomography-benchmarks && just run-all /scratch/pk_tmobench/synthetic.nx /scratch/pk_tmobench'

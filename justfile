@@ -52,35 +52,37 @@ pip-install:
 generate-input detector-width="1024" detector-height="1024" projection-count="512" filename=default-nx:
     conda run --no-capture-output --name {{env-name}} -- python scripts/nxs_generator.py --output-path {{filename}} --sinogram-shape {{detector-height}} {{projection-count}} {{detector-width}}
 
-generate-input-huge: (generate-input "2048" "4096" "2000" "synthetic-huge.nx")
+generate-input-huge filename="synthetic-huge.nx": (generate-input "2048" "4096" "2000" filename)
 
-generate-all: generate-input generate-input-huge
+generate-all prefix=".": \
+    (generate-input "1024" "1024" "512" prefix + "/" + default-nx) \
+    (generate-input-huge prefix + "/synthetic-huge.nx")
 
-run-all input-file=default-nx: \
-    (run-httomo "pipelines/httomo/fbp-preproc.yaml" input-file) \
-    (run-httomo "pipelines/httomo/fbp.yaml" input-file) \
-    (run-httomo "pipelines/httomo/lprec.yaml" input-file) \
-    (run-nabu "pipelines/nabu/fbp-preproc.conf" input-file) \
-    (run-nabu "pipelines/nabu/fbp.conf" input-file) \
-    (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf" input-file) \
-    (run-tomocupy "pipelines/tomocupy/fbp.conf" input-file) \
-    (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file "recon")
+run-all input-file=default-nx output-prefix=".": \
+    (run-httomo "pipelines/httomo/fbp-preproc.yaml" input-file "1" output-prefix + "/httomo-out") \
+    (run-httomo "pipelines/httomo/fbp.yaml" input-file "1" output-prefix + "/httomo-out") \
+    (run-httomo "pipelines/httomo/lprec.yaml" input-file "1" output-prefix + "/httomo-out") \
+    (run-nabu "pipelines/nabu/fbp-preproc.conf" input-file "1" output-prefix + "/nabu-out") \
+    (run-nabu "pipelines/nabu/fbp.conf" input-file "1" output-prefix + "/nabu-out") \
+    (run-tomocupy "pipelines/tomocupy/fbp-preproc.conf" input-file "recon_steps" output-prefix + "/tomocupy-out") \
+    (run-tomocupy "pipelines/tomocupy/fbp.conf" input-file "recon_steps" output-prefix + "/tomocupy-out") \
+    (run-tomocupy "pipelines/tomocupy/lprec.conf" input-file "recon" output-prefix + "/tomocupy-out")
 
 # Run httomo tomography pipeline
-run-httomo pipeline input-file=default-nx tasks="1":
-    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{tasks}} bash -c "time python -m httomo run {{input-file}} {{pipeline}} httomo-out"
+run-httomo pipeline input-file=default-nx tasks="1" output-dir="httomo-out":
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{tasks}} bash -c "time python -m httomo run {{input-file}} {{pipeline}} {{output-dir}}"
 
 # Run Nabu tomography pipeline
-run-nabu pipeline input-file=default-nx gpus="1":
+run-nabu pipeline input-file=default-nx gpus="1" output-dir="nabu-out":
     # Need to edit and copy the config file to specify the input Nexus
-    sed -e 's/synthetic.nx/{{input-file}}/g' -e 's/^gpus = [0-9]\+/gpus = {{gpus}}/' -e 's/^workers = [0-9]\+/workers = {{gpus}}/' {{pipeline}} > {{pipeline}}.tmp
-    mkdir -p nabu-out
+    conda run --no-capture-output --name {{env-name}} -- python scripts/nabu_config_updater.py --pipeline {{pipeline}} --input-file {{input-file}} --output-dir {{output-dir}} --gpus {{gpus}}
+    mkdir -p {{output-dir}}/nabu-out
     conda run --no-capture-output --name {{env-name}} -- time bash -c 'PATH=$CONDA_PREFIX/nvvm/bin:$PATH nabu {{pipeline}}.tmp'
     rm {{pipeline}}.tmp
 
 # Run tomocupy tomography pipeline
-run-tomocupy pipeline input-file=default-nx subcommand="recon_steps":
-    conda run --no-capture-output --name {{env-name}} -- time tomocupy {{subcommand}} --config {{pipeline}} --file-name {{input-file}} --out-path-name tomocupy-out --save-format h5nolinks
+run-tomocupy pipeline input-file=default-nx subcommand="recon_steps" output-dir="tomocupy-out":
+    conda run --no-capture-output --name {{env-name}} -- time tomocupy {{subcommand}} --config {{pipeline}} --file-name {{input-file}} --out-path-name {{output-dir}} --save-format h5nolinks
 
 trace-all: \
     (trace-httomo "pipelines/httomo/fbp-preproc.yaml") \

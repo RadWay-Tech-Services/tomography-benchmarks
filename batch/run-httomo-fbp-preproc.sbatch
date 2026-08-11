@@ -12,4 +12,4 @@
 
 module load singularity
 export TMPDIR=/tmp
-singularity exec --nv -B /opt/cray:/opt/cray -B /project/pk_tmobench/tomography-benchmarks:/tomography-benchmarks tomobenchmarks.sif bash -c '. /miniconda3/bin/activate && cd /tomography-benchmarks && for i in {0..1}; do just run-httomo pipelines/httomo/fbp-preproc.yaml /scratch/pk_tmobench/synthetic-huge.nx 4 /scratch/pk_tmobench/httomo-out; done'
+singularity exec --nv -B /opt/cray:/opt/cray -B /project/pk_tmobench/tomography-benchmarks:/tomography-benchmarks -B /scratch/pk_tmobench:/scratch/pk_tmobench tomobenchmarks.sif bash -c '. /miniconda3/bin/activate && cd /tomography-benchmarks && for i in {0..1}; do just run-httomo pipelines/httomo/fbp-preproc.yaml /scratch/pk_tmobench/synthetic-huge.nx 4 /scratch/pk_tmobench/httomo-out; done'

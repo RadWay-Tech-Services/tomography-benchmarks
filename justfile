@@ -89,8 +89,8 @@ trace-all: \
     (trace-nabu "pipelines/nabu/fbp-preproc.conf") \
     (trace-tomocupy "pipelines/tomocupy/fbp-preproc.conf")
 
-trace-httomo pipeline input-file=default-nx tasks="1":
-    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{tasks}} bash -c "py-spy record --subprocesses --function --full-filenames --format chrometrace --output httomo-trace-\$OMPI_COMM_WORLD_RANK.json -- httomo run {{input-file}} {{pipeline}} httomo-out"
+trace-httomo pipeline input-file=default-nx tasks="1" output-dir="httomo-out" trace-output="httomo-trace":
+    conda run --no-capture-output --name {{env-name}} -- mpirun -n {{tasks}} bash -c "py-spy record --subprocesses --function --full-filenames --format chrometrace --output {{trace-output}}-\$OMPI_COMM_WORLD_RANK.json -- httomo run {{input-file}} {{pipeline}} {{output-dir}}"
 
 trace-nabu pipeline input-file=default-nx gpus="1":
     # Need to edit and copy the config file to specify the input Nexus

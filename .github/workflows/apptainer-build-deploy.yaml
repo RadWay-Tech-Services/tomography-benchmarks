@@ -36,4 +36,4 @@ jobs:
         # Use default registry user ${{ github.repository_owner }} , or set a secret ${{ secrets.GHCR_USERNAME }}
         run: |
            echo ${{ secrets.GITHUB_TOKEN }} | apptainer registry login -u ${{ github.repository_owner }} --password-stdin oras://ghcr.io
-           apptainer push tomobenchmarks.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}
+           apptainer push tomobenchmarks.sif oras://ghcr.io/radway-tech-services/tomography-benchmarks:${GITHUB_SHA}

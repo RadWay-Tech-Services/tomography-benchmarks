@@ -9,6 +9,7 @@ on:
       - 'environment.yml'
       - 'requirements.txt'
       - 'tomobenchmarks.def'
+      - '.github/workflows/apptainer-build-deploy.yaml'
 
 jobs:
   build-test-container:
@@ -35,4 +36,4 @@ jobs:
         # Use default registry user ${{ github.repository_owner }} , or set a secret ${{ secrets.GHCR_USERNAME }}
         run: |
            echo ${{ secrets.GITHUB_TOKEN }} | apptainer registry login -u ${{ github.repository_owner }} --password-stdin oras://ghcr.io
-           apptainer push tomobenchmarks.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${tag}
+           apptainer push tomobenchmarks.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA}

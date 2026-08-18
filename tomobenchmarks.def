@@ -4,6 +4,7 @@ From: ubuntu:24.04
 %files
     justfile /justfile
     environment.yml /environment.yml
+    requirements.txt /requirements.txt
 
 %post
     apt-get update -qq && apt-get install -y git make ssh curl just

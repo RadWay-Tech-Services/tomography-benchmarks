@@ -1,0 +1,9 @@
+git+https://github.com/lebedov/scikit-cuda@0.5.1
+nabu[full]==2025.2.6
+git+https://github.com/RadWay-Tech-Services/tomocupy@62f439670f19065b67c02084c42d8cc80d98d7ab
+tomobar==2026.3.1.0
+httomolib==4.2
+httomolibgpu==5.8.1
+httomo-backends==1.2.0
+httomo==3.2.1
+py-spy

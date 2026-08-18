@@ -7,6 +7,8 @@ on:
     paths:
       - 'justfile'
       - 'environment.yml'
+      - 'requirements.txt'
+      - 'tomobenchmarks.def'
 
 jobs:
   build-test-container:
